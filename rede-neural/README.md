@@ -1,4 +1,3 @@
-...existing code...
 # Rede Neural — Exercício com TensorFlow.js
 
 Projeto de exemplo para entender redes neurais simples usando TensorFlow.js. O objetivo foi treinar um modelo para aprender a relação linear entre entradas e saídas a partir de poucos exemplos.
