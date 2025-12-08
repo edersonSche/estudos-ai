@@ -2,6 +2,9 @@ import { GoogleGenAI } from '@google/genai';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+const PRICE_INPUT = 0.1 / 1_000_000;
+const PRICE_OUTPUT = 0.1 / 1_000_000;
+
 @Injectable()
 export class GeminiService {
   private readonly gemini: GoogleGenAI;
@@ -24,11 +27,15 @@ export class GeminiService {
           config: { temperature },
         });
 
-        //console.log(response.text);
+        const inputTokens = response.usageMetadata?.promptTokenCount ?? 0;
+        const outputTokens = response.usageMetadata?.thoughtsTokenCount ?? 0;
+
+        const cost = inputTokens * PRICE_INPUT + outputTokens * PRICE_OUTPUT;
 
         return {
           text: response.text,
           usage: response.usageMetadata ?? null,
+          cost,
         };
       } catch (err: any) {
         if (attempt === retries) {
