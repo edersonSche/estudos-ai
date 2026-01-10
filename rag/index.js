@@ -88,6 +88,7 @@ async function queryIndex(query, k=3, path="index.jsonl"){
     const question = "Como importar notas no módulo compras?";
     const res = await queryIndex(question, 3, file);
 
+
     console.log("");
     console.log("---------------------------------");
     console.log("Question:", question);
@@ -97,4 +98,17 @@ async function queryIndex(query, k=3, path="index.jsonl"){
     //após isto podemos pegar a pergunta efetuada, o conteúdo encontrado 
     // (limitando por um percentual acima de 80%) e com isto montar um promtp
     // para enviar a uma LLM e assim termos uma resposta mais "humanizada"
+    //exemplo:
+    /*
+    Use apenas os trechos abaixo (marcados) para responder. Se não houver resposta, retorne "Informação não encontrada".
+
+    <doc1>
+    {texto do chunk 1}
+    Fonte: {metadata}
+    </doc1>
+
+    ...
+
+    Pergunta: {pergunta do usuário}
+    */
 })();
