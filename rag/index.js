@@ -51,7 +51,7 @@ async function queryIndex(query, k = 3){
                 1 - (embedding <=> $1) as score
             from documents
          )
-         where score > 0.80
+         where score > 0.75
          order by score desc limit $2
         `,
         [embeddingVector, k]
@@ -68,7 +68,7 @@ async function queryIndex(query, k = 3){
     const result  = await pgClient.query(`
         select id, content 
         from documents
-        WHERE embedding IS NULL
+        where embedding IS NULL
     `);
 
     // construir índices/enbeddings
@@ -77,18 +77,11 @@ async function queryIndex(query, k = 3){
     }
 
     // consultar
-    const question = "Como importar notas no módulo compras?";
-    //const question = "Como posso saber se estou cadastrado no sistema?";
+    const question = "Como importar notas no módulo compras?"; // duvida mais precisa
+    //const question = "Como posso saber se estou cadastrado no sistema?"; //conteudo inexistente
     const answers = await queryIndex(question, 3);
 
     await pgClient.end();
-
-    const rules = `
-        Você é um especialista no sistema e precisará responder as perguntas vindas dos usuários.
-        Use apenas os trechos abaixo (marcados) para responder. Se não houver resposta, retorne "Informação não encontrada".
-        Não criei nenhum conceito novo que fuja do conteúdo fornecido abaixo (marcados)
-        Apenas devolva a resposta da pergunta efetuada pelo usuário
-    `;
 
     const docs = answers.rows.map(item => `
         <doc${item.id}>
@@ -98,8 +91,13 @@ async function queryIndex(query, k = 3){
         `)
 
     const prompt = `
-        ${rules}
+        Você é um especialista no sistema e precisará responder questionamentos vindos dos usuários.
+        
+        Regras:
+        - Use apenas os trechos abaixo (marcados) para responder. Se não houver resposta, retorne "Nenhuma informação encontrada".
+        - Apenas devolva a resposta da pergunta efetuada pelo usuário
 
+        Documentos;
         ${docs}
 
         Pergunta: "${question}"
